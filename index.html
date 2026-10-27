@@ -11,6 +11,7 @@
     <meta name="viewport"
           content="minimal-ui, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta property="fb:app_id" content="677505792353827"/>
     <meta property="og:title" content="Agar.io"/>
     <meta property="og:description"
@@ -21,12 +22,12 @@
     <meta property="og:image:height" content="630"/>
     <meta property="og:type" content="website"/>
     <title>Agar.io</title>
-    <link id="favicon" rel="icon" type="image/png" href="favicon-32x32.png"/>
+    <link id="favicon" rel="icon" type="image/png" href="split.png"/>
     <link href='https://fonts.googleapis.com/css?family=Ubuntu:700' rel='stylesheet' type='text/css'>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="Vector2.js"></script>
-    <script src="main_out.js?542"></script>
+    <script src="main_out.js?"></script>
 	
     <style>body {
         padding: 0;
@@ -89,21 +90,9 @@
         box-sizing: content-box;
     }
 
-    .region-message {
-        display: none;
-        margin-bottom: 12px;
-        margin-left: 6px;
-        margin-right: 6px;
-        text-align: center;
-    }
-
-    #nick, #locationKnown #region {
+    #nick {
         width: 65%;
         float: left;
-    }
-
-    #locationUnknown #region {
-        margin-bottom: 15px;
     }
 
     #gamemode, #spectateBtn {
@@ -171,31 +160,13 @@
             </div>
             <div class="form-group">
                 <input id="nick" class="form-control" placeholder="Nick" maxlength="15"/>
-                <select id="gamemode" class="form-control" onchange="setGameMode($(this).val());" required>
-                    <option selected value="">FFA</option>
-                    <option value=":teams">Teams</option>
-                    <option value=":experimental">Experimental</option>
+                <select id="gamemode" class="form-control" onchange="setGameMode();" required>
+                    <!-- Set each value to HOST:PORT, ws://HOST:PORT, or wss://HOST:PORT. -->
+                    <option selected value=":ffa" data-mode=":ffa">FFA</option>
+                    <option value=":teams" data-mode=":teams">Teams</option>
+                    <option value=":experimental" data-mode=":experimental">Experimental</option>
                 </select>
                 <br clear="both"/>
-            </div>
-            <div id="locationUnknown">
-                <select id="region" class="form-control" onchange="setRegion($('#region').val());" required>
-                    <option selected disabled value=""> -- Select a Region --</option>
-                    <option value="US-Fremont">US West</option>
-                    <option value="US-Atlanta">US East</option>
-                    <option value="BR-Brazil">South America</option>
-                    <option value="EU-London">Europe</option>
-                    <option value="RU-Russia">Russia</option>
-                    <option value="TK-Turkey">Turkey</option>
-                    <option value="JP-Tokyo">East Asia</option>
-                    <option value="CN-China">China</option>
-                    <option value="SG-Singapore">Oceania</option>
-                </select>
-            </div>
-            <div>
-                <div class="text-muted region-message CN-China">
-
-                </div>
             </div>
             <div class="form-group">
                 <div>
@@ -207,7 +178,7 @@
 
                 <button disabled type="submit" id="playBtn"
                         onclick="setNick(document.getElementById('nick').value); return false;"
-                        class="btn btn-play btn-primary btn-needs-server">Play
+                        class="btn btn-play btn-primary btn-needs-connection">Play
                 </button>
                 <button onclick="$('#settings, #instructions').toggle();return false;"
                         class="btn btn-info btn-settings"><i class="glyphicon glyphicon-cog"></i></button>
@@ -215,9 +186,8 @@
             </div>
             <div id="settings" class="checkbox" style="display:none;">
                 <div class="form-group" id="mainform">
-                    <div id="locationKnown"></div>
                     <button id="spectateBtn" onclick="spectate(); return false;" disabled
-                            class="btn btn-warning btn-spectate btn-needs-server">Spectate
+                            class="btn btn-warning btn-spectate btn-needs-connection">Spectate
                     </button>
                     <br clear="both"/>
                 </div>

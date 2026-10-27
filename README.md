@@ -24,8 +24,10 @@ This is a clone of agar.io. In this project we aim to acheive the following.
 Copy all files to a server with PHP support (e.g. LEMP/LAMP). To check whether your server supports PHP, please read [this tutorial](http://www.cyberciti.biz/faq/how-do-i-test-php-installation-with-a-phpinfo-page/).
 Once everything is set up, open index.html in your browser. If everything is working well, go to the next section to use your own Ogar server.
 
+The skins gallery (`gallery/img.php`) requires the PHP GD extension. Install and enable `php-gd` for the PHP version used by your web server, then restart the web server. You can check whether GD is enabled with `php -m` (look for `gd`).
+
 ### Support Your Server
-Replace the CONNECTION_URL with your own ip and port in main_out.js
+Set each game mode's option value in `index.html` to its WebSocket server; Addresses can be `HOST:PORT`, `ws://HOST:PORT`, or `wss://HOST:PORT`. Without a scheme, the client uses `wss://` on HTTPS pages and `ws://` otherwise; browsers block `ws://` connections from HTTPS pages.
 
 ### Upload Custom Skins
 The upload module does two things. The first is to upload a skin onto skins folder. The second is that the client request the server to run checkdir.php every 15 seconds to check what skins are uploaded and add them into knownNameDict. Then the skins can be loaded. 

@@ -1,12 +1,5 @@
 (function (wHandle, wjQuery) {
     /**
-     * Enter url in the following format: HOST : PORT
-     *
-     * Example: 127.0.0.1:443
-     *
-     */
-    var CONNECTION_URL = "162.243.157.40:443";
-    /**
      * Enter path to the skin image folder
      * To take skins from the official server enter: "http://agar.io/skins/"
      */
@@ -30,8 +23,6 @@
         document.getElementById("canvas").focus();
         var isTyping = false;
         var chattxt;
-        getServerList();
-        setInterval(getServerList, 18E4);
         mainCanvas = nCanvas = document.getElementById("canvas");
         ctx = mainCanvas.getContext("2d");
         /*mainCanvas.onmousedown = function (event) {
@@ -161,12 +152,7 @@
             setInterval(drawGameScene, 1E3 / 60);
         }
         setInterval(sendMouseMove, 40);
-        if (w) {
-            wjQuery("#region").val(w);
-        }
-        Ha();
-        setRegion(wjQuery("#region").val());
-        null == ws && w && showConnecting();
+        updateServerSelection();
         wjQuery("#overlays").show();
         canvasResize();
 
@@ -294,44 +280,10 @@
         Y = (rawMouseY - canvasHeight / 2) / viewZoom + nodeY
     }
 
-    function getServerList() {
-        if (null == playerStat) {
-            playerStat = {};
-            wjQuery("#region").children().each(function () {
-                var a = wjQuery(this),
-                    b = a.val();
-                b && (playerStat[b] = a.text())
-            });
-        }
-        wjQuery.get("info.php", function (a) {
-            var numPlayers = {};
-            for (var region in a.regions) {
-                var d = region.split(":")[0];
-                numPlayers[d] = numPlayers[d] || 0;
-                numPlayers[d] += a.regions[region].numPlayers
-            }
-            for (var numplayer in numPlayers) wjQuery('#region option[value="' + numplayer + '"]').text(playerStat[numplayer] + " (" + numPlayers[numplayer] + " players)")
-        }, "json")
-    }
-
     function hideOverlays() {
         hasOverlay = false;
         wjQuery("#adsBottom").hide();
         wjQuery("#overlays").hide();
-        Ha()
-    }
-
-    function setRegion(a) {
-        if (a && a != w) {
-            if (wjQuery("#region").val() != a) {
-                wjQuery("#region").val(a);
-            }
-            w = wHandle.localStorage.location = a;
-            wjQuery(".region-message").hide();
-            wjQuery(".region-message." + a).show();
-            wjQuery(".btn-needs-server").prop("disabled", false);
-            ma && showConnecting();
-        }
     }
 
     function showOverlays(arg) {
@@ -341,36 +293,34 @@
         arg || wjQuery("#adsBottom").fadeIn(3E3)
     }
 
-    function Ha() {
-        wjQuery("#region").val() ? wHandle.localStorage.location = wjQuery("#region").val() : wHandle.localStorage.location && wjQuery("#region").val(wHandle.localStorage.location);
-        wjQuery("#region").val() ? wjQuery("#locationKnown").append(wjQuery("#region")) : wjQuery("#locationUnknown").append(wjQuery("#region"))
-    }
-
-    function attemptConnection() {
-        console.log("Find " + w + gameMode);
-        wjQuery.ajax("main.php", {
-            error: function () {
-                setTimeout(attemptConnection, 1E3)
-            },
-            success: function () {
-                wsConnect("ws://" + CONNECTION_URL)
-            },
-            dataType: "text",
-            method: "POST",
-            cache: false,
-            crossDomain: true,
-            data: w + gameMode || "?"
-        })
-    }
-
     function showConnecting() {
-        if (ma && w) {
+        if (ma && serverAddress) {
             wjQuery("#connecting").show();
-            attemptConnection()
+            wjQuery(".btn-needs-connection").prop("disabled", true);
+            wsConnect()
         }
     }
 
-    function wsConnect(wsUrl) {
+    function getWebSocketUrl(address) {
+        if (/^wss?:\/\//i.test(address)) {
+            return address;
+        }
+        return (wHandle.location.protocol == "https:" ? "wss://" : "ws://") + address;
+    }
+
+    function updateServerSelection() {
+        var selectedMode = wjQuery("#gamemode option:selected"),
+            address = selectedMode.val(),
+            mode = selectedMode.attr("data-mode");
+
+        if (address != serverAddress || mode != gameMode) {
+            serverAddress = address;
+            gameMode = mode;
+            showConnecting();
+        }
+    }
+
+    function wsConnect() {
         if (ws) {
             ws.onopen = null;
             ws.onmessage = null;
@@ -381,8 +331,7 @@
             }
             ws = null
         }
-        var c = CONNECTION_URL;
-        wsUrl = "ws://" + c;
+        var wsUrl = getWebSocketUrl(serverAddress);
         nodesOnScreen = [];
         playerCells = [];
         nodes = {};
@@ -414,6 +363,7 @@
         var msg;
         delay = 500;
         wjQuery("#connecting").hide();
+        wjQuery(".btn-needs-connection").prop("disabled", false);
         console.log("socket open");
         msg = prepareData(5);
         msg.setUint8(0, 254);
@@ -428,6 +378,7 @@
 
     function onWsClose() {
         console.log("socket close");
+        wjQuery(".btn-needs-connection").prop("disabled", true);
         setTimeout(showConnecting, delay);
         delay *= 1.5
     }
@@ -1070,8 +1021,6 @@
     }
 
 
-    var localProtocol = wHandle.location.protocol,
-        localProtocolHttps = "https:" == localProtocol;
     var nCanvas, ctx, mainCanvas, lbCanvas, chatCanvas, canvasWidth, canvasHeight, qTree = null,
         ws = null,
         nodeX = 0,
@@ -1094,7 +1043,7 @@
         rightPos = 1E4,
         bottomPos = 1E4,
         viewZoom = 1,
-        w = null,
+        serverAddress = null,
         showSkin = true,
         showName = true,
         showColor = false,
@@ -1127,7 +1076,6 @@
     splitIcon.src = "split.png";
     ejectIcon.src = "feed.png";
     var wCanvas = document.createElement("canvas");
-    var playerStat = null;
     wHandle.isSpectating = false;
     wHandle.setNick = function (arg) {
         hideOverlays();
@@ -1135,7 +1083,6 @@
         sendNickName();
         userScore = 0
     };
-    wHandle.setRegion = setRegion;
     wHandle.setSkins = function (arg) {
         showSkin = arg
     };
@@ -1169,12 +1116,7 @@
         sendUint8(1);
         hideOverlays()
     };
-    wHandle.setGameMode = function (arg) {
-        if (arg != gameMode) {
-            gameMode = arg;
-            showConnecting();
-        }
-    };
+    wHandle.setGameMode = updateServerSelection;
     wHandle.setAcid = function (arg) {
         xa = arg
     };
@@ -1185,19 +1127,8 @@
         Ra = +wHandle.localStorage.AB8;
         wHandle.ABGroup = Ra;
     }
-    /*wjQuery.get(localProtocol + "//gc.agar.io", function (a) {
-     var b = a.split(" ");
-     a = b[0];
-     b = b[1] || "";
-     -1 == "DE IL PL HU BR AT UA".split(" ").indexOf(a) && knownNameDict.push("nazi");
-     -1 == ["UA"].indexOf(a) && knownNameDict.push("ussr");
-     T.hasOwnProperty(a) && ("string" == typeof T[a] ? w || setRegion(T[a]) : T[a].hasOwnProperty(b) && (w || setRegion(T[a][b])))
-     }, "text");*/
     setTimeout(function () {
     }, 3E5);
-    var T = {
-        ZW: "EU-London"
-    };
     wHandle.connect = wsConnect;
 
     //This part is for loading custon skins

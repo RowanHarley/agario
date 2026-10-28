@@ -8,7 +8,7 @@
 
     var touchX, touchY,
     // is this running in a touch capable environment?
-        touchable = 'createTouch' in document,
+        touchable = 'ontouchstart' in wHandle || navigator.maxTouchPoints > 0,
         touches = []; // array of touch vectors
 
     var leftTouchID = -1,
@@ -25,23 +25,6 @@
         var chattxt;
         mainCanvas = nCanvas = document.getElementById("canvas");
         ctx = mainCanvas.getContext("2d");
-        /*mainCanvas.onmousedown = function (event) {
-            if (isTouchStart) {
-                var xOffset = event.clientX - (5 + canvasWidth / 5 / 2),
-                    yOffset = event.clientY - (5 + canvasWidth / 5 / 2);
-                if (Math.sqrt(xOffset * xOffset + yOffset * yOffset) <= canvasWidth / 5 / 2) {
-                    sendMouseMove();
-                    sendUint8(17); //split
-                    return
-                }
-            }
-
-
-            rawMouseX = event.clientX;
-            rawMouseY = event.clientY;
-            mouseCoordinateChange();
-            sendMouseMove()
-        };*/
         mainCanvas.onmousemove = function (event) {
             rawMouseX = event.clientX;
             rawMouseY = event.clientY;
@@ -53,7 +36,8 @@
             mainCanvas.addEventListener( 'touchstart', onTouchStart, false );
             mainCanvas.addEventListener( 'touchmove', onTouchMove, false );
             mainCanvas.addEventListener( 'touchend', onTouchEnd, false );
-             }
+            mainCanvas.addEventListener( 'touchcancel', onTouchEnd, false );
+        }
 
         mainCanvas.onmouseup = function () {
         };
@@ -930,7 +914,7 @@
          ctx.drawImage(splitIcon, canvasWidth - size, canvasHeight - size, size, size);
         }
 
-        if (touchable && splitIcon.width) {
+        if (touchable && ejectIcon.width) {
             var size = ~~ (canvasWidth / 7);
             ctx.drawImage(ejectIcon, canvasWidth - size, canvasHeight - 2*size-10, size, size);
         }

@@ -1,4 +1,6 @@
 (function (wHandle, wjQuery) {
+    var PROTOCOL_VERSION = 4;
+
     /**
      * Enter path to the skin image folder
      * To take skins from the official server enter: "http://agar.io/skins/"
@@ -336,7 +338,7 @@
         console.log("socket open");
         msg = prepareData(5);
         msg.setUint8(0, 254);
-        msg.setUint32(1, 1, true);
+        msg.setUint32(1, PROTOCOL_VERSION, true);
         wsSend(msg);
         msg = prepareData(5);
         msg.setUint8(0, 255);
@@ -383,9 +385,13 @@
                 posSize = msg.getFloat32(offset, true);
                 offset += 4;
                 break;
-            case 20: // clear nodes
+            case 18: // clear all nodes
+            case 20: // clear nodes (protocol 4)
                 playerCells = [];
                 nodesOnScreen = [];
+                nodes = {};
+                nodelist = [];
+                Cells = [];
                 break;
             case 21: // draw line
                 lineX = msg.getInt16(offset, true);

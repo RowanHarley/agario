@@ -938,25 +938,23 @@
                 ctx.fillText(c, 100 - ctx.measureText(c).width / 2, 40);
                 var b;
                 if (null == teamScores) {
-                    for (ctx.font = "20px Ubuntu", b = 0; b < leaderBoard.length; ++b) {
-                        c = leaderBoard[b].name || "An unnamed cell";
-                        if (!showName) {
-                            c = "An unnamed cell";
-                        }
-                        if (-1 != nodesOnScreen.indexOf(leaderBoard[b].id)) {
-                            playerCells[0].name && (c = playerCells[0].name);
-                            ctx.fillStyle = "#FFAAAA";
-                            if (!noRanking) {
-                                c = b + 1 + ". " + c;
+                    ctx.font = "20px Ubuntu";
+                    for (b = 0; b < leaderBoard.length; ++b) {
+                        var entry = leaderBoard[b];
+                        var displayName = entry.name || "";
+                        if (-1 != nodesOnScreen.indexOf(entry.id)) {
+                            if (playerCells.length && playerCells[0].name) {
+                                displayName = playerCells[0].name;
                             }
-                            ctx.fillText(c, 100 - ctx.measureText(c).width / 2, 70 + 24 * b);
+                            ctx.fillStyle = "#FFAAAA";
                         } else {
                             ctx.fillStyle = "#FFFFFF";
-                            if (!noRanking) {
-                                c = b + 1 + ". " + c;
-                            }
-                            ctx.fillText(c, 100 - ctx.measureText(c).width / 2, 70 + 24 * b);
                         }
+                        displayName = displayName.replace(/\{[^{}]*\}/g, "").trim() || "An unnamed cell";
+                        if (!noRanking) {
+                            displayName = b + 1 + ". " + displayName;
+                        }
+                        ctx.fillText(displayName, 100 - ctx.measureText(displayName).width / 2, 70 + 24 * b);
                     }
                 } else {
                     for (b = c = 0; b < teamScores.length; ++b) {
@@ -1378,11 +1376,9 @@
                 }
                 ctx.closePath();
                 var skinName = this.name.toLowerCase();
-                if (skinName.indexOf("[") != -1) {
-                    var clanStart = skinName.indexOf("[");
-                    var clanEnd = skinName.indexOf("]");
-                    skinName = skinName.slice(clanStart + 1, clanEnd);
-                    //console.log(skinName);
+                var skinTag = skinName.match(/\{([^{}]*)\}/);
+                if (skinTag) {
+                    skinName = skinTag[1];
                 }
 
                 if (!this.isAgitated && showSkin && ":teams" != gameMode) {
@@ -1425,14 +1421,15 @@
                 //draw name
                 if (0 != this.id) {
                     var b = ~~this.y;
+                    var displayName = this.name.replace(/\{[^{}]*\}/g, "").trim();
                     if (
                         (showName || c) &&
-                        this.name &&
+                        displayName &&
                         this.nameCache &&
                         (null == e || -1 == knownNameDict_noDisp.indexOf(skinName))
                     ) {
                         ncache = this.nameCache;
-                        ncache.setValue(this.name);
+                        ncache.setValue(displayName);
                         ncache.setSize(this.getNameSize());
                         var ratio = Math.ceil(10 * viewZoom) / 10;
                         ncache.setScale(ratio);

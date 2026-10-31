@@ -96,6 +96,18 @@
         float: left;
     }
 
+    #skinHint {
+        margin: 0 0 8px;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    #skinHint code {
+        color: #337ab7;
+        background-color: #f5f5f5;
+        white-space: nowrap;
+    }
+
     #gamemode, #spectateBtn {
         width: 33%;
         float: right;
@@ -160,7 +172,11 @@
                 <br clear="both"/>
             </div>
             <div class="form-group">
-                <input id="nick" class="form-control" placeholder="Nick" maxlength="15"/>
+                <p id="skinHint" class="help-block">
+                    Put the skin name in <code>{}</code> before your nickname.<br/>
+                    Example: <code>{earth}Playername</code>
+                </p>
+                <input id="nick" class="form-control" placeholder="Nick" maxlength="15" aria-describedby="skinHint"/>
                 <select id="gamemode" class="form-control" onchange="setGameMode();" required>
                     <!-- Set each value to HOST:PORT, ws://HOST:PORT, or wss://HOST:PORT. -->
                     <option selected value=":ffa" data-mode=":ffa">FFA</option>
@@ -206,9 +222,9 @@
         <div id="instructions">
             <hr/>
             <center><span class="text-muted">
-This game is currently in</br>
-development by</br>
-tomsterley</br>
+This game is currently in<br/>
+development by<br/>
+tomsterley<br/>
 </span></center>
         </div>
         <hr/>

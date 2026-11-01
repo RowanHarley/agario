@@ -1,10 +1,47 @@
-<!-- The data encoding type, enctype, MUST be specified as below -->
-<form enctype="multipart/form-data" action="uploads.php" method="POST">
-    <!-- MAX_FILE_SIZE must precede the file input field -->
-    <!-- Name of input element determines name in $_FILES array -->
-    upload avatar picture, for example, if your name is <font size="6">foo</font> in the game, name your file as <font size="6" color="red">foo.png</font> (less than 2M, currently only <font size = "6">english</font> is supported, use <font size="6" color="red">png</font>), your avatar will appear 
-<br></br>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Upload a Skin · Agar Clone</title>
+    <link rel="icon" type="image/png" href="split.png">
+    <link rel="stylesheet" href="uploads.css">
+    <script src="uploads.js" defer></script>
+</head>
+<body>
+<main class="upload-card">
+    <header>
+        <a class="back-link" href="index.html">&larr; Back to game</a>
+        <h1>Upload a skin</h1>
+        <p class="text-muted">Give your cell a little personality.</p>
+    </header>
 
-<input type="file" name="fileToUpload" id="fileToUpload">
-    <input type="submit" value="Upload Image" name="submit">
-</form>
+    <form id="uploadForm" enctype="multipart/form-data" action="uploads.php" method="post">
+        <input type="hidden" name="MAX_FILE_SIZE" value="2097152">
+        <div class="upload-preview" aria-hidden="true">
+            <span id="previewPlaceholder">Your skin<br>preview</span>
+            <img id="skinPreview" alt="" hidden>
+        </div>
+
+        <label for="fileToUpload">Choose your skin</label>
+        <input type="file" name="fileToUpload" id="fileToUpload" accept=".png,image/png"
+               aria-describedby="fileHelp nameHelp" required>
+        <p id="fileHelp" class="help-text">PNG only &middot; Up to 2 MiB &middot; Maximum 4096 &times; 4096 pixels.<br>
+            Square images look best on your cell.</p>
+
+        <div id="nameHelp" class="skin-tip">
+            <strong>Your filename is your skin name.</strong>
+            <p>Use 1–13 letters, numbers or hyphens, e.g. <code>earth.png</code>.
+                Names are saved in lowercase and cannot replace existing skins.</p>
+            <p>In the game, type <code id="nicknameExample">{earth}Player</code> as your nickname.
+                Keep the whole nickname within 15 characters.</p>
+        </div>
+
+        <div id="uploadStatus" class="status" role="status" aria-live="polite" hidden></div>
+        <button id="uploadButton" class="btn btn-primary" type="submit">Upload skin</button>
+    </form>
+
+    <footer>Need some inspiration? <a href="gallery/">Browse the skins gallery</a></footer>
+</main>
+</body>
+</html>

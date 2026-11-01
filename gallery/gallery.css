@@ -1,0 +1,82 @@
+.gallery-card {
+    max-width: 960px;
+}
+
+.gallery-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.gallery-header h1 {
+    margin-top: 0;
+}
+
+.gallery-header p {
+    margin-bottom: 0;
+}
+
+.gallery-header .btn-primary {
+    width: auto;
+}
+
+.gallery-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.sort-label {
+    padding: 3px 8px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.skin-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.skin-card {
+    height: 100%;
+    margin: 0;
+    padding: 16px 4px;
+    background: #fafafa;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.skin-image {
+    display: block;
+    width: 112px;
+    height: 112px;
+    max-width: 100%;
+    margin: 0 auto;
+    background: #f5f5f5;
+    border: 3px solid #e5e5e5;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.skin-name {
+    margin-top: 14px;
+    font-size: 13px;
+}
+
+.skin-name code {
+    user-select: all;
+}
+
+.gallery-empty {
+    padding: 32px 0;
+    text-align: center;
+}

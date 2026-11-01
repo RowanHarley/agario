@@ -914,6 +914,10 @@
         return score;
     }
 
+    function getDisplayName(name) {
+        return name.replace(/\{[^{}]*\}/g, "").trim();
+    }
+
     function drawLeaderBoard() {
         lbCanvas = null;
         if (null != teamScores || 0 != leaderBoard.length)
@@ -950,7 +954,7 @@
                         } else {
                             ctx.fillStyle = "#FFFFFF";
                         }
-                        displayName = displayName.replace(/\{[^{}]*\}/g, "").trim() || "An unnamed cell";
+                        displayName = getDisplayName(displayName) || "An unnamed cell";
                         if (!noRanking) {
                             displayName = b + 1 + ". " + displayName;
                         }
@@ -1421,7 +1425,7 @@
                 //draw name
                 if (0 != this.id) {
                     var b = ~~this.y;
-                    var displayName = this.name.replace(/\{[^{}]*\}/g, "").trim();
+                    var displayName = getDisplayName(this.name);
                     if (
                         (showName || c) &&
                         displayName &&
